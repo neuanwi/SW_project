@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Dashboard</title>
     <style>
+        * { box-sizing: border-box; }
         body {
-          font-family: sans-serif;
           margin: 0;
+          font-family: 'Segoe UI', sans-serif;
           background: #f8f9fa;
         }
         header {
@@ -17,76 +18,157 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
+          font-size: 1rem;
         }
-        .welcome {
+        header .logo {
           font-weight: bold;
+          font-size: 1.3rem;
         }
-        .content {
-          padding: 2rem;
+        .container {
+          display: flex;
+          height: calc(100vh - 60px);
+          position: relative;
         }
-        .card {
+        .sidebar {
+          width: 360px;
           background: white;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          margin-bottom: 1rem;
+          border-right: 1px solid #ccc;
+          padding: 2.5rem 1rem 1rem 2rem;
+          transition: transform 0.3s ease;
+          position: relative;
         }
-        #create-btn {
-          padding: 0.5rem 1rem;
-          background: #228be6;
-          color: white;
-          border: none;
-          border-radius: 0.5rem;
+        .sidebar.hidden {
+          transform: translateX(-100%);
+        }
+        .toggle-btn {
+          position: absolute;
+          top: 20px;
+          left: 360px;
+          z-index: 10;
+          background: #ffffff;
+          border: 2px solid #339af0;
+          border-radius: 12px;
+          font-size: 1.5rem;
+          padding: 0.6rem 1.2rem;
           cursor: pointer;
-          margin-bottom: 1rem;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .menu {
+          width: 100%;
+          padding: 1.1rem;
+          margin-top: 1.2rem;
+          background: #f1f3f5;
+          border: 1px solid #ccc;
+          border-radius: 0.6rem;
+          font-weight: bold;
+          font-size: 1.1rem;
+          cursor: pointer;
+        }
+        .main {
+          flex: 1;
+          padding: 3rem;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 3rem;
+          align-content: flex-start;
+        }
+        .project-card {
+          width: 370px;
+          height: 300px;
+          border: 2px solid black;
+          border-radius: 1rem;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          background: white;
+          box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+        .project-card img {
+          width: 80px;
+          height: 80px;
+        }
+        .project-card .dots {
+          position: absolute;
+          top: 15px;
+          right: 20px;
+          font-weight: bold;
+          font-size: 1.3rem;
+        }
+        .project-name {
+          margin-top: 1.4rem;
+          font-family: monospace;
+          font-weight: bold;
+          font-size: 1.2rem;
+        }
+        .new-project {
+          width: 370px;
+          height: 300px;
+          border: 2px dashed #339af0;
+          border-radius: 1rem;
+          text-align: center;
+          color: #339af0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          background: #e7f5ff;
+        }
+        .new-project:hover {
+          background: #d0ebff;
         }
     </style>
 </head>
 <body>
 <header>
     <div class="logo">🌱 Project Dashboard</div>
-    <div class="welcome" id="user-email">로그인 중...</div>
+    <div id="user-email">??님 반갑습니다!</div>
 </header>
 
-<div class="content">
-    <button id="create-btn" onclick="createProject()">+ 새 프로젝트 만들기</button>
-    <div class="card">
-        <h3>프로젝트 리스트</h3>
-        <p>이곳에 프로젝트 카드들을 나열할 예정입니다.</p>
+<div class="container">
+    <div class="sidebar" id="sidebar">
+        <button class="toggle-btn" onclick="toggleSidebar()">⬅</button>
+        <button class="menu">Project</button>
+        <button class="menu">Repository</button>
+    </div>
+
+    <div class="main">
+        <div class="project-card">
+            <div class="dots">⋮</div>
+            <img src="https://img.icons8.com/ios-filled/50/apple.png" alt="apple">
+            <div class="project-name">Project Name</div>
+        </div>
+        <div class="project-card">
+            <div class="dots">⋮</div>
+            <img src="https://img.icons8.com/ios/50/acorn--v1.png" alt="acorn">
+            <div class="project-name">Project Name</div>
+        </div>
+        <div class="new-project" onclick="alert('새 프로젝트 생성!')">
+            <div style="font-size: 1.2rem;">New Project</div>
+            <div style="font-size: 2.4rem;">＋</div>
+        </div>
     </div>
 </div>
 
 <script>
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      location.href = "/login.html";
-    } else {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      document.getElementById("user-email").innerText = `${payload.sub}님 환영합니다!`;
+    let isSidebarVisible = true;
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const btn = document.querySelector(".toggle-btn");
+      isSidebarVisible = !isSidebarVisible;
+      sidebar.classList.toggle("hidden", !isSidebarVisible);
+      btn.textContent = isSidebarVisible ? '⬅' : '➡';
     }
 
-    function createProject() {
-      const name = prompt("새 프로젝트 이름을 입력하세요:");
-      if (!name) return;
-
+    const token = localStorage.getItem("jwt");
+    if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      const userEmail = payload.sub;
-
-      fetch("http://localhost:8080/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: name,
-          icon: "apple",
-          userId: null
-        })
-      })
-      .then(res => res.ok ? alert("프로젝트가 생성되었습니다.") : alert("생성 실패"))
-      .catch(() => alert("요청 실패"));
+      const email = payload.sub;
+      const username = email.split("@")[0];
+      document.getElementById("user-email").innerText = `${username}님 반갑습니다!`;
     }
 </script>
 </body>
