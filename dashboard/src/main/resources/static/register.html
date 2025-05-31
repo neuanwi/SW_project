@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <style>
+        body {
+          font-family: 'Segoe UI', sans-serif;
+          background: linear-gradient(to bottom right, #d0ebff, #f1f3f5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .card {
+          background: white;
+          padding: 2.5rem;
+          border-radius: 1rem;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+          width: 360px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        h2 {
+          margin-bottom: 1.5rem;
+          color: #228be6;
+        }
+        input {
+          width: 100%;
+          padding: 0.75rem;
+          margin-bottom: 1rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+        }
+        button {
+          width: 100%;
+          padding: 0.75rem;
+          margin-top: 0.5rem;
+          background: #228be6;
+          color: white;
+          font-weight: bold;
+          border: none;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+        button:hover {
+          background: #1971c2;
+        }
+        #after-register {
+          margin-top: 1.5rem;
+          display: none;
+        }
+        #result {
+          margin-top: 1rem;
+          font-size: 0.95rem;
+          color: #e03131;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>회원가입</h2>
+    <form id="register-form">
+        <input type="email" id="email" placeholder="이메일" required />
+        <input type="password" id="password" placeholder="비밀번호" required />
+        <input type="text" id="name" placeholder="이름" required />
+        <button type="submit">가입하기</button>
+    </form>
+
+    <div id="after-register">
+        <p style="color: #2f9e44; font-weight: bold;">계정이 생성되었습니다!</p>
+        <button onclick="location.href='/'">메인화면으로 돌아가기</button>
+    </div>
+
+    <p id="result"></p>
+</div>
+
+<script>
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const name = document.getElementById("name").value;
+
+      const response = await fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      const resultText = await response.text();
+      const result = document.getElementById("result");
+
+      if (response.ok) {
+        if (resultText.includes("이미 등록된")) {
+          result.innerText = resultText;
+        } else {
+          document.getElementById("after-register").style.display = "block";
+          document.getElementById("register-form").style.display = "none";
+          result.innerText = "";
+        }
+      } else {
+        result.innerText = "서버 오류가 발생했습니다.";
+      }
+    });
+</script>
+</body>
+</html>

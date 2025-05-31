@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Login</title>
+    <style>
+        body {
+          font-family: sans-serif;
+          background: #f1f3f5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+        }
+        .box {
+          background: white;
+          padding: 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          width: 300px;
+          text-align: center;
+        }
+        input {
+          width: 100%;
+          padding: 0.5rem;
+          margin: 0.5rem 0;
+          border: 1px solid #ccc;
+          border-radius: 0.5rem;
+        }
+        button {
+          width: 100%;
+          padding: 0.5rem;
+          margin-top: 0.5rem;
+          background: #2f9e44;
+          color: white;
+          border: none;
+          border-radius: 0.5rem;
+          cursor: pointer;
+        }
+        #welcome {
+          margin-top: 1rem;
+          font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>로그인</h2>
+    <input type="email" id="email" placeholder="이메일 또는 아이디" required />
+    <input type="password" id="password" placeholder="비밀번호" required />
+    <button onclick="login()">로그인</button>
+    <button onclick="location.href='/register.html'">회원가입</button>
+    <p id="result"></p>
+    <p id="welcome"></p>
+</div>
+
+<script>
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = document.getElementById("result");
+      const welcome = document.getElementById("welcome");
+
+      if (response.ok) {
+        const token = await response.text();
+        localStorage.setItem("jwt", token);
+        location.href = "/dashboard.html";
+      } else {
+        const msg = await response.text();
+        result.innerText = "로그인 실패: " + msg;
+        if (msg.includes("이메일")) {
+          result.innerText += "\n회원가입이 필요합니다.";
+        }
+        welcome.innerText = "";
+      }
+    }
+</script>
+</body>
+</html>

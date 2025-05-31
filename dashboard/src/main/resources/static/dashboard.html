@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Dashboard</title>
+    <style>
+        body {
+          font-family: sans-serif;
+          margin: 0;
+          background: #f8f9fa;
+        }
+        header {
+          background: #343a40;
+          color: white;
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .welcome {
+          font-weight: bold;
+        }
+        .content {
+          padding: 2rem;
+        }
+        .card {
+          background: white;
+          padding: 1rem;
+          border-radius: 0.5rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          margin-bottom: 1rem;
+        }
+        #create-btn {
+          padding: 0.5rem 1rem;
+          background: #228be6;
+          color: white;
+          border: none;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">🌱 Project Dashboard</div>
+    <div class="welcome" id="user-email">로그인 중...</div>
+</header>
+
+<div class="content">
+    <button id="create-btn" onclick="createProject()">+ 새 프로젝트 만들기</button>
+    <div class="card">
+        <h3>프로젝트 리스트</h3>
+        <p>이곳에 프로젝트 카드들을 나열할 예정입니다.</p>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      location.href = "/login.html";
+    } else {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      document.getElementById("user-email").innerText = `${payload.sub}님 환영합니다!`;
+    }
+
+    function createProject() {
+      const name = prompt("새 프로젝트 이름을 입력하세요:");
+      if (!name) return;
+
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const userEmail = payload.sub;
+
+      fetch("http://localhost:8080/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: name,
+          icon: "apple",
+          userId: null
+        })
+      })
+      .then(res => res.ok ? alert("프로젝트가 생성되었습니다.") : alert("생성 실패"))
+      .catch(() => alert("요청 실패"));
+    }
+</script>
+</body>
+</html>
